@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          
+      - name: Run tests
+        run: go test -v ./...
+        
+      - name: Run go mod tidy
+        run: go mod tidy
+        
+      - name: Verify no changes
+        run: git diff --exit-code
+
+  goreleaser:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      
+      - name: Run tests before release
+        run: go test -v ./...
+      
+      - uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
