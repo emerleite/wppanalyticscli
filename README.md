@@ -48,20 +48,23 @@ export FB_ACCESS_TOKEN="your_access_token_here"
 ### Examples
 
 #### Basic usage with daily granularity
-```bash
-export FB_ACCESS_TOKEN="EAAOTgr7rkAoBO2E8lZAPCXM7CtNDBseZCODnxVmif1HzfZAIdTx1BH06KBhOuoNR8ZCxxfRZCXYv30QiOG96qA6bZBNJqZBIkYLCg5m1tK1J50sC4dLECnXD5dEKdPbJOanZAJvo5SF6i1ljuHOkS3cNIWbH2BUscSZARMhu2Of43pGv8UIvqq5n26nMQK3ZAI4GlzFUWREYQZCjUG7mlJ1UGEbMgnNkAvq8z4ZAfY7ZAfVYLXwJhgAZDZD"
 
-./wppanalyticscli -wbaid=932157148829117 -start=2025-06-20T00:00:00Z -end=2025-06-24T00:00:00Z
+```bash
+export FB_ACCESS_TOKEN="value"
+
+./wppanalyticscli -wbaid=1234567890 -start=2025-06-20T00:00:00Z -end=2025-06-24T00:00:00Z
 ```
 
 #### With monthly granularity
+
 ```bash
-./wppanalyticscli -wbaid=932157148829117 -start=2025-01-01T00:00:00Z -end=2025-06-30T00:00:00Z -granularity=MONTH
+./wppanalyticscli -wbaid=1234567890 -start=2025-01-01T00:00:00Z -end=2025-06-30T00:00:00Z -granularity=MONTH
 ```
 
 #### With half-hour granularity
+
 ```bash
-./wppanalyticscli -wbaid=932157148829117 -start=2025-06-24T00:00:00Z -end=2025-06-24T23:59:59Z -granularity=HALF_HOUR
+./wppanalyticscli -wbaid=1234567890 -start=2025-06-24T00:00:00Z -end=2025-06-24T23:59:59Z -granularity=HALF_HOUR
 ```
 
 ## Date Format
@@ -79,11 +82,13 @@ The tool outputs the API response as pretty-printed JSON to stdout. Error messag
 ## Development
 
 ### Running tests
+
 ```bash
 make test
 ```
 
 ### Building for different platforms
+
 ```bash
 make build-linux
 make build-windows
@@ -91,6 +96,7 @@ make build-darwin
 ```
 
 ### Release
+
 The project is configured with GoReleaser for automated releases. Push a git tag to trigger a release:
 
 ```bash
@@ -107,3 +113,4 @@ The tool will exit with status code 1 and display an error message if:
 - Date parsing fails
 - Invalid granularity is specified
 - API request fails
+
