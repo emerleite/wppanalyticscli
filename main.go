@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	_ "time/tzdata" // Embed timezone data for Windows compatibility
 
 	"wppanalyticscli/internal/api"
 	"wppanalyticscli/internal/config"
@@ -38,11 +39,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Load timezone
+	// Load timezone with fallback
 	loc, err := time.LoadLocation(cfg.Timezone)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error loading timezone '%s': %v\n", cfg.Timezone, err)
-		os.Exit(1)
+		fmt.Fprintf(os.Stderr, "Warning: Could not load timezone '%s': %v\n", cfg.Timezone, err)
+		fmt.Fprintf(os.Stderr, "Falling back to UTC timezone\n")
+		loc = time.UTC
 	}
 
 	// Load access token
