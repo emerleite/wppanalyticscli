@@ -1,4 +1,4 @@
-module github.com/username/wppanalyticscli
+module wppanalyticscli
 
 go 1.24.1
 
