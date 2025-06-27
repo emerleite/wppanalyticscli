@@ -13,6 +13,10 @@ type Config struct {
 	Granularity string
 	Timezone    string
 	AccessToken string
+	// Template analytics specific fields
+	Mode         string   // "analytics" or "template"
+	MetricTypes  []string // For template analytics
+	TemplateIDs  []string // For template analytics
 }
 
 // Validator defines the interface for configuration validation
@@ -42,8 +46,22 @@ func (v *ConfigValidator) Validate(config *Config) error {
 		return fmt.Errorf("end date is required")
 	}
 	
-	if !isValidGranularity(config.Granularity) {
-		return fmt.Errorf("granularity must be HALF_HOUR, DAY, or MONTH")
+	if config.Mode == "template" {
+		if !isValidTemplateGranularity(config.Granularity) {
+			return fmt.Errorf("granularity for templates must be daily")
+		}
+		
+		if len(config.TemplateIDs) == 0 {
+			return fmt.Errorf("template IDs are required for template analytics")
+		}
+		
+		if len(config.MetricTypes) == 0 {
+			return fmt.Errorf("metric types are required for template analytics")
+		}
+	} else {
+		if !isValidGranularity(config.Granularity) {
+			return fmt.Errorf("granularity must be HALF_HOUR, DAY, or MONTH")
+		}
 	}
 	
 	if config.AccessToken == "" {
@@ -57,6 +75,16 @@ func (v *ConfigValidator) Validate(config *Config) error {
 func isValidGranularity(g string) bool {
 	switch g {
 	case "HALF_HOUR", "DAY", "MONTH":
+		return true
+	default:
+		return false
+	}
+}
+
+// isValidTemplateGranularity validates the granularity value for templates
+func isValidTemplateGranularity(g string) bool {
+	switch g {
+	case "daily":
 		return true
 	default:
 		return false

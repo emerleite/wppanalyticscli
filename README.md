@@ -1,6 +1,6 @@
 # WPP Analytics CLI
 
-A command-line tool for fetching analytics data from Facebook Graph API.
+A command-line tool for fetching analytics and template analytics data from Facebook Graph API.
 
 ## Prerequisites
 
@@ -33,38 +33,69 @@ export FB_ACCESS_TOKEN="your_access_token_here"
 
 ## Usage
 
+The CLI supports two modes: **analytics** (default) and **template analytics**.
+
+### Basic Analytics (Default Mode)
+
 ```bash
 ./wppanalyticscli -wbaid=<WBA_ID> -start=<ISO_8601_DATE> -end=<ISO_8601_DATE> [-granularity=<GRANULARITY>]
 ```
 
+### Template Analytics
+
+```bash
+./wppanalyticscli -mode=template -wbaid=<WBA_ID> -start=<ISO_8601_DATE> -end=<ISO_8601_DATE> -templates=<TEMPLATE_IDS> -metrics=<METRIC_TYPES> [-granularity=daily]
+```
+
 ### Parameters
 
+#### Common Parameters
 - `-wbaid`: WhatsApp Business Account ID (required)
 - `-start`: Start date in ISO-8601 format (required)
-- `-end`: End date in ISO-8601 format (required)  
+- `-end`: End date in ISO-8601 format (required)
+- `-timezone`: Timezone for date display (optional, default: America/Sao_Paulo)
+- `-mode`: Mode selection (optional, default: analytics)
+  - Valid values: `analytics`, `template`
+
+#### Analytics Mode Parameters
 - `-granularity`: Data granularity (optional, default: DAY)
   - Valid values: `HALF_HOUR`, `DAY`, `MONTH`
 
+#### Template Analytics Parameters
+- `-templates`: Comma-separated template IDs (required for template mode)
+- `-metrics`: Comma-separated metric types (required for template mode)
+  - Valid values: `cost`, `clicked`, `delivered`, `read`, `sent`
+- `-granularity`: Data granularity (default: daily)
+  - Valid values: `daily`
+
 ### Examples
 
-#### Basic usage with daily granularity
+#### Basic Analytics
 
 ```bash
-export FB_ACCESS_TOKEN="value"
+export FB_ACCESS_TOKEN="your_access_token_here"
 
-./wppanalyticscli -wbaid=1234567890 -start=2025-06-20T00:00:00Z -end=2025-06-24T00:00:00Z
+# Daily analytics (default)
+./wppanalyticscli -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24
+
+# Monthly granularity
+./wppanalyticscli -wbaid=932157148829117 -start=2025-01-01 -end=2025-06-30 -granularity=MONTH
+
+# Half-hour granularity
+./wppanalyticscli -wbaid=932157148829117 -start=2025-06-24T00:00:00Z -end=2025-06-24T23:59:59Z -granularity=HALF_HOUR
 ```
 
-#### With monthly granularity
+#### Template Analytics
 
 ```bash
-./wppanalyticscli -wbaid=1234567890 -start=2025-01-01T00:00:00Z -end=2025-06-30T00:00:00Z -granularity=MONTH
-```
+# Template analytics with all metrics
+./wppanalyticscli -mode=template -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24 -templates=1026573095658757 -metrics=cost,clicked,delivered,read,sent
 
-#### With half-hour granularity
+# Multiple templates
+./wppanalyticscli -mode=template -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24 -templates=1026573095658757,1234567890123456 -metrics=delivered,read,clicked
 
-```bash
-./wppanalyticscli -wbaid=1234567890 -start=2025-06-24T00:00:00Z -end=2025-06-24T23:59:59Z -granularity=HALF_HOUR
+# Specific metrics only
+./wppanalyticscli -mode=template -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24 -templates=1026573095658757 -metrics=cost,clicked
 ```
 
 ## Date Format
