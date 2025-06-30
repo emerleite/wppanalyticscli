@@ -98,6 +98,22 @@ export FB_ACCESS_TOKEN="your_access_token_here"
 ./wppanalyticscli -mode=template -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24 -templates=1026573095658757 -metrics=cost,clicked
 ```
 
+#### Windows Command Line
+
+On Windows, quote parameters containing commas:
+
+```cmd
+REM Command Prompt
+set FB_ACCESS_TOKEN=your_access_token_here
+wppanalyticscli.exe -mode=template -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24 -templates=1026573095658757 -metrics="cost,clicked,delivered,read,sent"
+```
+
+```powershell
+# PowerShell
+$env:FB_ACCESS_TOKEN="your_access_token_here"
+.\wppanalyticscli.exe -mode=template -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24 -templates=1026573095658757 -metrics="cost,clicked,delivered,read,sent"
+```
+
 ## Date Format
 
 All dates must be in ISO-8601 format with timezone information:
