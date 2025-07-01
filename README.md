@@ -1,6 +1,6 @@
 # WPP Analytics CLI
 
-A command-line tool for fetching analytics and template analytics data from Facebook Graph API.
+A command-line tool for fetching analytics, template analytics, and listing message templates from Facebook Graph API.
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ export FB_ACCESS_TOKEN="your_access_token_here"
 
 ## Usage
 
-The CLI supports two modes: **analytics** (default) and **template analytics**.
+The CLI supports three modes: **analytics** (default), **template analytics**, and **list templates**.
 
 ### Basic Analytics (Default Mode)
 
@@ -47,15 +47,21 @@ The CLI supports two modes: **analytics** (default) and **template analytics**.
 ./wppanalyticscli -mode=template -wbaid=<WBA_ID> -start=<ISO_8601_DATE> -end=<ISO_8601_DATE> -templates=<TEMPLATE_IDS> -metrics=<METRIC_TYPES> [-granularity=daily]
 ```
 
+### List Templates
+
+```bash
+./wppanalyticscli -mode=list-templates -wbaid=<WBA_ID> [-limit=<LIMIT>] [-after=<CURSOR>]
+```
+
 ### Parameters
 
 #### Common Parameters
 - `-wbaid`: WhatsApp Business Account ID (required)
-- `-start`: Start date in ISO-8601 format (required)
-- `-end`: End date in ISO-8601 format (required)
+- `-start`: Start date in ISO-8601 format (required for analytics and template modes)
+- `-end`: End date in ISO-8601 format (required for analytics and template modes)
 - `-timezone`: Timezone for date display (optional, default: America/Sao_Paulo)
 - `-mode`: Mode selection (optional, default: analytics)
-  - Valid values: `analytics`, `template`
+  - Valid values: `analytics`, `template`, `list-templates`
 
 #### Analytics Mode Parameters
 - `-granularity`: Data granularity (optional, default: DAY)
@@ -67,6 +73,10 @@ The CLI supports two modes: **analytics** (default) and **template analytics**.
   - Valid values: `cost`, `clicked`, `delivered`, `read`, `sent`
 - `-granularity`: Data granularity (default: daily)
   - Valid values: `daily`
+
+#### List Templates Parameters
+- `-limit`: Number of templates to retrieve (optional, default: 25)
+- `-after`: Pagination cursor for next page (optional)
 
 ### Examples
 
@@ -98,6 +108,19 @@ export FB_ACCESS_TOKEN="your_access_token_here"
 ./wppanalyticscli -mode=template -wbaid=932157148829117 -start=2025-06-20 -end=2025-06-24 -templates=1026573095658757 -metrics=cost,clicked
 ```
 
+#### List Templates
+
+```bash
+# List all templates (default limit: 25)
+./wppanalyticscli -mode=list-templates -wbaid=932157148829117
+
+# List with custom limit
+./wppanalyticscli -mode=list-templates -wbaid=932157148829117 -limit=10
+
+# Pagination - get next page
+./wppanalyticscli -mode=list-templates -wbaid=932157148829117 -after="<cursor_from_previous_response>"
+```
+
 #### Windows Command Line
 
 On Windows, quote parameters containing commas:
@@ -124,7 +147,23 @@ All dates must be in ISO-8601 format with timezone information:
 
 ## Output
 
-The tool outputs the API response as pretty-printed JSON to stdout. Error messages are sent to stderr.
+The tool outputs formatted tables with analytics data, template analytics, or template listings. Error messages are sent to stderr.
+
+### Analytics Output
+- Table with date/time, conversation counts, and metrics by data point
+- Summary statistics
+- Cost breakdown and analysis
+
+### Template Analytics Output  
+- Table with template analytics data including costs, delivery rates, and engagement
+- Cost analysis and recommendations
+- Summary statistics per template
+
+### List Templates Output
+- Table with template information (ID, name, language, status, category)
+- Status breakdown summary
+- Category and language distribution
+- Pagination information for large result sets
 
 ## Development
 

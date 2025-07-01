@@ -14,9 +14,12 @@ type Config struct {
 	Timezone    string
 	AccessToken string
 	// Template analytics specific fields
-	Mode         string   // "analytics" or "template"
+	Mode         string   // "analytics", "template", or "list-templates"
 	MetricTypes  []string // For template analytics
 	TemplateIDs  []string // For template analytics
+	// Template listing specific fields
+	Limit        int      // For template listing pagination
+	After        string   // For template listing pagination
 }
 
 // Validator defines the interface for configuration validation
@@ -38,12 +41,15 @@ func (v *ConfigValidator) Validate(config *Config) error {
 		return fmt.Errorf("WBA ID is required")
 	}
 	
-	if config.StartDate == "" {
-		return fmt.Errorf("start date is required")
-	}
-	
-	if config.EndDate == "" {
-		return fmt.Errorf("end date is required")
+	// Start and end dates are not required for list-templates mode
+	if config.Mode != "list-templates" {
+		if config.StartDate == "" {
+			return fmt.Errorf("start date is required")
+		}
+		
+		if config.EndDate == "" {
+			return fmt.Errorf("end date is required")
+		}
 	}
 	
 	if config.Mode == "template" {
@@ -58,6 +64,9 @@ func (v *ConfigValidator) Validate(config *Config) error {
 		if len(config.MetricTypes) == 0 {
 			return fmt.Errorf("metric types are required for template analytics")
 		}
+	} else if config.Mode == "list-templates" {
+		// For list-templates mode, start/end dates are not required
+		// Only WBA ID and access token are needed
 	} else {
 		if !isValidGranularity(config.Granularity) {
 			return fmt.Errorf("granularity must be HALF_HOUR, DAY, or MONTH")

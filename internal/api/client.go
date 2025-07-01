@@ -15,6 +15,7 @@ import (
 type Client interface {
 	GetAnalytics(wbaID string, start, end int64, granularity, accessToken string) (*models.AnalyticsResponse, error)
 	GetTemplateAnalytics(wbaID string, start, end int64, granularity string, metricTypes []string, templateIDs []string, accessToken string) (*models.TemplateAnalyticsResponse, error)
+	ListTemplates(wbaID string, accessToken string, limit int, after string) (*models.TemplateListResponse, error)
 }
 
 // FacebookGraphClient implements the Client interface for Facebook Graph API
@@ -108,6 +109,46 @@ func (c *FacebookGraphClient) GetTemplateAnalytics(wbaID string, start, end int6
 	}
 	
 	var response models.TemplateAnalyticsResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("failed to parse response: %w", err)
+	}
+	
+	return &response, nil
+}
+
+// ListTemplates fetches message templates from Facebook Graph API
+func (c *FacebookGraphClient) ListTemplates(wbaID string, accessToken string, limit int, after string) (*models.TemplateListResponse, error) {
+	requestURL := fmt.Sprintf("%s/%s/message_templates", c.baseURL, wbaID)
+	
+	params := url.Values{}
+	params.Add("access_token", accessToken)
+	
+	if limit > 0 {
+		params.Add("limit", fmt.Sprintf("%d", limit))
+	}
+	
+	if after != "" {
+		params.Add("after", after)
+	}
+	
+	fullURL := fmt.Sprintf("%s?%s", requestURL, params.Encode())
+	
+	resp, err := c.httpClient.Get(fullURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make request: %w", err)
+	}
+	defer resp.Body.Close()
+	
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+	
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+	}
+	
+	var response models.TemplateListResponse
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
